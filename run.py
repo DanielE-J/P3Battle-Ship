@@ -31,16 +31,64 @@ def place_ships(board):
         while not placed:
             orientation = random.choice(['horizontal', 'vertical'])
             if orientation == 'horizontal':
-                row = random.randint(0, 8)
-                col = random.randint(0, 9 - size)
-                if all(board[row][col+i] == ' ' for i in range(size)):
-                    for i in range(size):
-                        board[row][col+i] = 'O'
+                row = random.randint(0, 9)
+                col = random.randint(0, 10 - size)
+                if all(board[row][col+j] == ' ' for j in range(size)):
+                    for j in range(size):
+                        board[row][col+j] = 'O'
                     placed = True
             else:
-                row = random.randint(0, 9 - size)
-                col = random.randint(0, 8)
-                if all(board[row+i][col] == ' ' for i in range(size)):
-                    for i in range(size):
-                        board[row+i][col] = 'O'
-                    placed = True        
+                row = random.randint(0, 10 - size)
+                col = random.randint(0, 9)
+                if all(board[row+j][col] == ' ' for j in range(size)):
+                    for j in range(size):
+                        board[row+j][col] = 'O'
+                    placed = True
+
+"""
+Allows the user to place ships manually on the board.
+"""                           
+def place_ships_manually(board, board_size=10):
+ 
+    ships = {'Carrier': 5, 'Battleship': 4, 'Cruiser': 3, 'Submarine': 3, 'Destroyer': 2}
+    
+    for ship, size in ships.items():
+        placed = False
+        while not placed:
+            print(f"\nPlacing the {ship} (size {size})")
+            print_board(board)
+            
+            # Get user input for orientation
+            orientation = input("Enter orientation (horizontal/vertical): ").strip().lower()
+            if orientation not in ['horizontal', 'vertical']:
+                print("Invalid orientation! Please enter 'horizontal' or 'vertical'.")
+                continue
+            
+            # Get user input for starting position
+            try:
+                row = int(input("Enter starting row (0-9): "))
+                col = int(input("Enter starting column (0-9): "))
+            except ValueError:
+                print("Invalid input! Please enter numeric values.")
+                continue
+            
+            # Validate position and fit
+            if orientation == 'horizontal':
+                if col + size > board_size or any(board[row][col + j] != ' ' for j in range(size)):
+                    print("Invalid position or overlap! Try again.")
+                    continue
+                # Place the ship
+                for j in range(size):
+                    board[row][col + j] = 'O'
+                placed = True
+            else:  # Vertical
+                if row + size > board_size or any(board[row + j][col] != ' ' for j in range(size)):
+                    print("Invalid position or overlap! Try again.")
+                    continue
+                # Place the ship
+                for j in range(size):
+                    board[row + j][col] = 'O'
+                placed = True
+
+    print("\nFinal Board:")
+    print_board(board)
